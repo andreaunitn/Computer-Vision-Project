@@ -11,12 +11,6 @@ public class JointController : MonoBehaviour
         public GameObject joint;
         public Color color;
     }
-    
-    public struct Bone
-    {
-        public Joint End1;
-        public Joint End2;
-    }
 
     [SerializeField, DataTable] public Joint[] joints;
     [SerializeField] private GameObject leftToeBase;
@@ -37,6 +31,28 @@ public class JointController : MonoBehaviour
     [SerializeField] private GameObject rightShoulder;
     [SerializeField] private GameObject spine;
     [SerializeField] private GameObject upperChest;
+
+    public int[][] bones =
+    {
+        new int[] {0,1},
+        new int[] {1,2},
+        new int[] {2,3},
+        new int[] {4,5},
+        new int[] {5,6},
+        new int[] {6,7},
+        new int[] {3,16},
+        new int[] {7,16},
+        new int[] {16,17},
+        new int[] {8,9},
+        new int[] {9,10},
+        new int[] {10,11},
+        new int[] {12,13},
+        new int[] {13,14},
+        new int[] {14,15},
+        new int[] {11,17},
+        new int[] {15,17},
+    };
+    
     public bool useRandomColor = true;
 
     void Start()
