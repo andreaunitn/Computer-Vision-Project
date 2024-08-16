@@ -55,7 +55,7 @@ public class JointController : MonoBehaviour
     
     public bool useRandomColor = true;
 
-    void Start()
+    void Awake()
     {
         joints = new Joint[18];
         joints[0].joint = leftToeBase;
