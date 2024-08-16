@@ -8,6 +8,8 @@ public class JointProjector : MonoBehaviour
     public Image jointCirclePrefab; // Prefab of the circle image
     public JointController jointController;
     public Image imagePrefab; // Prefab of the rectangle to be drawn as bone
+
+    public bool isCamera1;
     
     private Image[] _jointCircles;
     private Image[] _boneImages;
@@ -37,7 +39,17 @@ public class JointProjector : MonoBehaviour
         {
             // Convert the joint's world position to screen position
             Vector3 screenPoint = mainCamera.WorldToScreenPoint(jointController.joints[i].joint.transform.position);
-
+            
+            // Save joints position
+            if (isCamera1)
+            {
+                jointController.screenPointsC1[i] = screenPoint;
+            }
+            else
+            {
+                jointController.screenPointsC2[i] = screenPoint;
+            }
+            
             // Check if the joint is within the camera view
             if (screenPoint.z > 0)
             {

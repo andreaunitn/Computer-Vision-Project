@@ -55,6 +55,9 @@ public class JointController : MonoBehaviour
     
     public bool useRandomColor = true;
 
+    public Vector3[] screenPointsC1;
+    public Vector3[] screenPointsC2;
+
     void Awake()
     {
         joints = new Joint[18];
@@ -81,6 +84,9 @@ public class JointController : MonoBehaviour
         {
             AssignColors();
         }
+
+        screenPointsC1 = new Vector3[18];
+        screenPointsC2 = new Vector3[18];
     }
     
     void Update() {}
