@@ -10,6 +10,8 @@ public class JointProjector : MonoBehaviour
     public Image imagePrefab; // Prefab of the rectangle to be drawn as bone
 
     public bool isCamera1;
+    public Transform stereoCamera;
+    public GameObject sphere;
     
     private Image[] _jointCircles;
     private Image[] _boneImages;
@@ -57,8 +59,7 @@ public class JointProjector : MonoBehaviour
                 
                 // Convert screen position to canvas position
                 Vector2 canvasPos;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    canvasRectTransform, screenPoint, mainCamera, out canvasPos);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPoint, mainCamera, out canvasPos);
 
                 // Set the position of the circle image
                 _jointCircles[i].rectTransform.anchoredPosition = canvasPos;
@@ -66,6 +67,11 @@ public class JointProjector : MonoBehaviour
             else
             {
                 _jointCircles[i].gameObject.SetActive(false);
+            }
+
+            if (i == 14 && isCamera1)
+            {
+                sphere.transform.position = Triangulate(jointController.screenPointsC1[i], jointController.screenPointsC2[i]);
             }
         }
         
@@ -107,4 +113,55 @@ public class JointProjector : MonoBehaviour
         transform.localScale = new Vector3(dir.magnitude, transform.localScale.y, 1f);
     }
 
+    Vector3 Triangulate(Vector3 screenPointC1, Vector3 screenPointC2)
+    {
+        // Given pixel coordinates from the left and right cameras
+        Vector2 leftPixel = new Vector2(screenPointC1.x, screenPointC1.y);
+        Vector2 rightPixel = new Vector2(screenPointC2.x, screenPointC2.y);
+        
+        // Convert focal length from millimeters to pixels
+        // Access the camera component
+        Camera camera = GetComponent<Camera>();
+
+        // Focal length in mm (from the Physical Camera settings)
+        float focalLengthMM = camera.focalLength;
+
+        // Get the sensor size (in mm) from the camera
+        float sensorSizeX = camera.sensorSize.x; // Width of the sensor in mm
+
+        // Get the resolution of the rendered image (in pixels)
+        int imageWidthPixels = Screen.width;
+
+        // Calculate focal length in pixels
+        float focalLengthPixelsX = (focalLengthMM * imageWidthPixels) / sensorSizeX;
+        
+        // Focal length (in pixels) and baseline (in meters)
+        float focalLength = focalLengthPixelsX;
+        float baseline = 0.08f;
+
+        // Calculate disparity
+        float disparity = rightPixel.x - leftPixel.x;
+
+        // Calculate depth
+        float Z = (focalLength * baseline) / disparity;
+
+        // Principal point (usually center of the image)
+        Vector2 principalPoint = new Vector2(Screen.width / 2, Screen.height / 2);
+
+        // Calculate 3D point in the camera's local space
+        float X = (leftPixel.x - principalPoint.x) * Z / focalLength;
+        float Y = (leftPixel.y - principalPoint.y) * Z / focalLength;
+        
+        // Position of the point in the left camera's local coordinate system
+        Vector3 pointInLeftCameraSpace = new Vector3(X, Y, Z);
+        
+        // Get the left camera's position and rotation in world space
+        Vector3 leftCameraPosition = stereoCamera.transform.position;
+        Quaternion leftCameraRotation = stereoCamera.transform.rotation;
+
+        // If no rotation is applied to the camera (for simplicity):
+        Vector3 pointInWorldSpace = leftCameraPosition + (leftCameraRotation * pointInLeftCameraSpace);
+
+        return pointInWorldSpace;
+    }
 }
