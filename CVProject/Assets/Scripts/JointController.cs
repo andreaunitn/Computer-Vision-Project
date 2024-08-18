@@ -57,6 +57,8 @@ public class JointController : MonoBehaviour
 
     public Vector3[] screenPointsC1;
     public Vector3[] screenPointsC2;
+    public Camera camera1;
+    public Camera camera2;
 
     void Awake()
     {
@@ -85,8 +87,8 @@ public class JointController : MonoBehaviour
             AssignColors();
         }
 
-        screenPointsC1 = new Vector3[18];
-        screenPointsC2 = new Vector3[18];
+        screenPointsC1 = new Vector3[joints.Length];
+        screenPointsC2 = new Vector3[joints.Length];
     }
     
     void Update() {}

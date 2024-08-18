@@ -106,5 +106,4 @@ public class JointProjector : MonoBehaviour
         // Ensure Y and Z scales are consistent to prevent unwanted rotations
         transform.localScale = new Vector3(dir.magnitude, transform.localScale.y, 1f);
     }
-
 }
