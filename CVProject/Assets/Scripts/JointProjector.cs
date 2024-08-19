@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,10 +12,21 @@ public class JointProjector : MonoBehaviour
 
     public bool isCamera1;
     public Transform stereoCamera;
-    public GameObject sphere;
+    public GameObject spherePrefab; // Prefab of the sphere to be rendered in the scene
+
+    public CameraController cameraController;
     
     private Image[] _jointCircles;
     private Image[] _boneImages;
+    private GameObject[] _spheres;
+
+    private float _focalLengthMM; // Focal length in mm (from the Physical Camera settings)
+    private float _sensorSizeX; // Width of the sensor in mm
+    private int _imageWidthPixels; // Get the resolution of the rendered image (in pixels)
+    private float _baseline; // Baseline (in meters)
+    private Vector3 _leftCameraPosition; // Left camera position
+    private Quaternion _leftCameraRotation; // Left camera rotation in world space
+    
     
     void Start()
     {
@@ -31,6 +43,17 @@ public class JointProjector : MonoBehaviour
         {
             _jointCircles[i] = Instantiate(jointCirclePrefab, canvasRectTransform);
             _jointCircles[i].color = jointController.joints[i].color;
+        }
+
+        if (isCamera1)
+        {
+            // Initialize spheres for each joint
+            _spheres = new GameObject[jointController.joints.Length];
+            for (int i = 0; i < jointController.joints.Length; i++)
+            {
+                _spheres[i] = Instantiate(spherePrefab);
+                _spheres[i].GetComponent<MeshRenderer>().material.color = jointController.joints[i].color;
+            }   
         }
     }
 
@@ -53,8 +76,8 @@ public class JointProjector : MonoBehaviour
             }
             
             // Check if the joint is within the camera view
-            if (screenPoint.z > 0)
-            {
+            //if (screenPoint.z > 0)
+            //{
                 _jointCircles[i].gameObject.SetActive(true);
                 
                 // Convert screen position to canvas position
@@ -63,15 +86,23 @@ public class JointProjector : MonoBehaviour
 
                 // Set the position of the circle image
                 _jointCircles[i].rectTransform.anchoredPosition = canvasPos;
-            }
-            else
-            {
-                _jointCircles[i].gameObject.SetActive(false);
-            }
+            //}
+            //else
+            //{
+                //_jointCircles[i].gameObject.SetActive(false);
+            //}
 
-            if (i == 14 && isCamera1)
+            if (isCamera1)
             {
-                sphere.transform.position = Triangulate(jointController.screenPointsC1[i], jointController.screenPointsC2[i]);
+                // Update parameters for triangulation
+                _focalLengthMM = mainCamera.focalLength;
+                _sensorSizeX = mainCamera.sensorSize.x;
+                _imageWidthPixels = Screen.width;
+                _baseline = cameraController.camDistance;
+                _leftCameraPosition = stereoCamera.transform.position;
+                _leftCameraRotation = stereoCamera.transform.rotation;
+                
+                _spheres[i].transform.position = Triangulate(jointController.screenPointsC1[i], jointController.screenPointsC2[i]);
             }
         }
         
@@ -84,7 +115,22 @@ public class JointProjector : MonoBehaviour
             Vector3 screenPos1 = mainCamera.WorldToScreenPoint(jointController.joints[jointController.bones[i][1]].joint.transform.position);
             Vector2 canvasPos1;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPos1, mainCamera, out canvasPos1);
-            CreateLine(canvasPos0, canvasPos1, _boneImages[i], _boneImages[i].rectTransform, Color.white);
+            
+            Debug.Log("screenPos0: " + screenPos0 + " screenPos1: " + screenPos1);
+            
+            if (screenPos0.z < 0 && screenPos1.z < 0)
+            {
+                _boneImages[i].gameObject.SetActive(false);
+            }
+            else
+            {
+                _boneImages[i].gameObject.SetActive(true);
+            }
+            
+            //if (i == 12)
+            //{
+                CreateLine(canvasPos0, canvasPos1, _boneImages[i], _boneImages[i].rectTransform, Color.white);   
+            //}
         }
     }
     
@@ -92,6 +138,8 @@ public class JointProjector : MonoBehaviour
     {
         // Set the color of the image
         image.color = color;
+        
+        Debug.Log("positionOne:" + positionOne + " positionTwo: " + positionTwo);
     
         // Calculate the midpoint between the two positions
         Vector2 midpoint = (positionOne + positionTwo) / 2f;
@@ -120,30 +168,17 @@ public class JointProjector : MonoBehaviour
         Vector2 rightPixel = new Vector2(screenPointC2.x, screenPointC2.y);
         
         // Convert focal length from millimeters to pixels
-        // Access the camera component
-        Camera camera = GetComponent<Camera>();
-
-        // Focal length in mm (from the Physical Camera settings)
-        float focalLengthMM = camera.focalLength;
-
-        // Get the sensor size (in mm) from the camera
-        float sensorSizeX = camera.sensorSize.x; // Width of the sensor in mm
-
-        // Get the resolution of the rendered image (in pixels)
-        int imageWidthPixels = Screen.width;
-
         // Calculate focal length in pixels
-        float focalLengthPixelsX = (focalLengthMM * imageWidthPixels) / sensorSizeX;
+        float focalLengthPixelsX = (_focalLengthMM * _imageWidthPixels) / _sensorSizeX;
         
         // Focal length (in pixels) and baseline (in meters)
         float focalLength = focalLengthPixelsX;
-        float baseline = 0.08f;
 
         // Calculate disparity
         float disparity = rightPixel.x - leftPixel.x;
 
         // Calculate depth
-        float Z = (focalLength * baseline) / disparity;
+        float Z = (focalLength * _baseline) / disparity;
 
         // Principal point (usually center of the image)
         Vector2 principalPoint = new Vector2(Screen.width / 2, Screen.height / 2);
@@ -154,13 +189,9 @@ public class JointProjector : MonoBehaviour
         
         // Position of the point in the left camera's local coordinate system
         Vector3 pointInLeftCameraSpace = new Vector3(X, Y, Z);
-        
-        // Get the left camera's position and rotation in world space
-        Vector3 leftCameraPosition = stereoCamera.transform.position;
-        Quaternion leftCameraRotation = stereoCamera.transform.rotation;
 
         // If no rotation is applied to the camera (for simplicity):
-        Vector3 pointInWorldSpace = leftCameraPosition + (leftCameraRotation * pointInLeftCameraSpace);
+        Vector3 pointInWorldSpace = _leftCameraPosition + (_leftCameraRotation * pointInLeftCameraSpace);
 
         return pointInWorldSpace;
     }
