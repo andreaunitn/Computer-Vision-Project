@@ -71,4 +71,7 @@ CVProject/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 CVProject/[Aa]ssets/[Ss]treamingAssets/aa.meta
 CVProject/[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# Downloadable asset
+CVProject/[Aa]ssets/Brick Project Studio
+
 .DS_Store
