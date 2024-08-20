@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +25,6 @@ public class JointProjector : MonoBehaviour
     private float _baseline; // Baseline (in meters)
     private Vector3 _leftCameraPosition; // Left camera position
     private Quaternion _leftCameraRotation; // Left camera rotation in world space
-    
     
     void Start()
     {
@@ -76,8 +74,8 @@ public class JointProjector : MonoBehaviour
             }
             
             // Check if the joint is within the camera view
-            //if (screenPoint.z > 0)
-            //{
+            if (screenPoint.z > 0)
+            {
                 _jointCircles[i].gameObject.SetActive(true);
                 
                 // Convert screen position to canvas position
@@ -86,11 +84,11 @@ public class JointProjector : MonoBehaviour
 
                 // Set the position of the circle image
                 _jointCircles[i].rectTransform.anchoredPosition = canvasPos;
-            //}
-            //else
-            //{
-                //_jointCircles[i].gameObject.SetActive(false);
-            //}
+            }
+            else
+            {
+                _jointCircles[i].gameObject.SetActive(false);
+            }
 
             if (isCamera1)
             {
@@ -109,10 +107,10 @@ public class JointProjector : MonoBehaviour
         // Render bones
         for (int i = 0; i < jointController.bones.Length; i++)
         {
-            Vector3 screenPos0 = mainCamera.WorldToScreenPoint(jointController.joints[jointController.bones[i][0]].joint.transform.position);
+            Vector3 screenPos0 = WorldToScreenPointProjected(mainCamera, jointController.joints[jointController.bones[i][0]].joint.transform.position);
             Vector2 canvasPos0;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPos0, mainCamera, out canvasPos0);
-            Vector3 screenPos1 = mainCamera.WorldToScreenPoint(jointController.joints[jointController.bones[i][1]].joint.transform.position);
+            Vector3 screenPos1 = WorldToScreenPointProjected(mainCamera, jointController.joints[jointController.bones[i][1]].joint.transform.position);
             Vector2 canvasPos1;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPos1, mainCamera, out canvasPos1);
             
@@ -127,11 +125,26 @@ public class JointProjector : MonoBehaviour
                 _boneImages[i].gameObject.SetActive(true);
             }
             
-            //if (i == 12)
-            //{
-                CreateLine(canvasPos0, canvasPos1, _boneImages[i], _boneImages[i].rectTransform, Color.white);   
-            //}
+            // Draw line
+            CreateLine(canvasPos0, canvasPos1, _boneImages[i], _boneImages[i].rectTransform, Color.white);   
         }
+    }
+    
+    // We use this function because WorldToScreenPoint of Unity does not work when the joint is behind the camera
+    public static Vector3 WorldToScreenPointProjected(Camera camera, Vector3 worldPos)
+    {
+        Vector3 camNormal = camera.transform.forward;
+        Vector3 vectorFromCam = worldPos - camera.transform.position;
+        float camNormDot = Vector3.Dot(camNormal, vectorFromCam);
+        
+        if (camNormDot <= 0)
+        {
+            // We are behind the camera forward facing plane, project the position in front of the plane
+            Vector3 proj = (camNormal * (camNormDot * 1.01f));
+            worldPos = camera.transform.position + (vectorFromCam - proj);
+        }
+
+        return RectTransformUtility.WorldToScreenPoint(camera, worldPos);
     }
     
     void CreateLine(Vector2 positionOne, Vector2 positionTwo, Image image, RectTransform transform, Color color)
@@ -157,7 +170,6 @@ public class JointProjector : MonoBehaviour
 
         // Set the scale of the RectTransform. 
         // The width (x scale) is set to the distance between the points
-        // Ensure Y and Z scales are consistent to prevent unwanted rotations
         transform.localScale = new Vector3(dir.magnitude, transform.localScale.y, 1f);
     }
 

@@ -459,7 +459,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
-  m_Camera: {fileID: 1917579984}
+  m_Camera: {fileID: 981903342}
   m_PlaneDistance: 0.02
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -506,7 +506,7 @@ Transform:
   m_GameObject: {fileID: 981903338}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.017999835, y: 0.15399995, z: 0.27899998}
+  m_LocalPosition: {x: -0.017999835, y: 0.15399995, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -568,14 +568,14 @@ Camera:
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
-  m_projectionMatrixMode: 1
+  m_projectionMatrixMode: 2
   m_GateFitMode: 2
   m_FOVAxisMode: 0
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 20.78461
+  m_FocalLength: 7
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -590,13 +590,13 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 120
+  field of view: 119.48713
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -627,6 +627,10 @@ MonoBehaviour:
   jointController: {fileID: 1606718253}
   imagePrefab: {fileID: 5129607082914756013, guid: f5d216c528f7f4e2d90d763e0c8bb672,
     type: 3}
+  isCamera1: 0
+  stereoCamera: {fileID: 0}
+  spherePrefab: {fileID: 0}
+  cameraController: {fileID: 0}
 --- !u!1 &1107812849 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -2084811680363313996, guid: 6ccb77404e608400096a9e6eef7afae6,
@@ -807,7 +811,7 @@ Transform:
   m_GameObject: {fileID: 1199928845}
   serializedVersion: 2
   m_LocalRotation: {x: 0.63389575, y: 0.000000044703484, z: 0.00000005820766, w: 0.77341855}
-  m_LocalPosition: {x: 0.022000581, y: 0.4415232, z: 0.103185646}
+  m_LocalPosition: {x: 0.022, y: 0.187, z: 0.154}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -959,6 +963,8 @@ MonoBehaviour:
   spine: {fileID: 682090690}
   upperChest: {fileID: 945108203}
   useRandomColor: 1
+  screenPointsC1: []
+  screenPointsC2: []
 --- !u!4 &1606718254
 Transform:
   m_ObjectHideFlags: 0
@@ -1092,7 +1098,7 @@ Transform:
   m_GameObject: {fileID: 1917579980}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.062000163, y: 0.15399995, z: 0.27899998}
+  m_LocalPosition: {x: 0.062000163, y: 0.15399995, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1162,14 +1168,14 @@ Camera:
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
-  m_projectionMatrixMode: 1
+  m_projectionMatrixMode: 2
   m_GateFitMode: 2
   m_FOVAxisMode: 0
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 20.78461
+  m_FocalLength: 7
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -1184,13 +1190,13 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 120
+  field of view: 119.48713
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1221,6 +1227,11 @@ MonoBehaviour:
   jointController: {fileID: 1606718253}
   imagePrefab: {fileID: 5129607082914756013, guid: f5d216c528f7f4e2d90d763e0c8bb672,
     type: 3}
+  isCamera1: 1
+  stereoCamera: {fileID: 1917579981}
+  spherePrefab: {fileID: 602818865321885992, guid: ab971e0e0ea10410eb171d419337296c,
+    type: 3}
+  cameraController: {fileID: 1199928847}
 --- !u!1 &1949261078 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3086436065929644917, guid: 6ccb77404e608400096a9e6eef7afae6,
