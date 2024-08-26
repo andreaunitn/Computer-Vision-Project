@@ -12,7 +12,7 @@ public class JointController : MonoBehaviour
         public Color color;
     }
 
-    [SerializeField, DataTable] public Joint[] joints;
+    [HideInInspector] [SerializeField, DataTable] public Joint[] joints;
     [SerializeField] private GameObject leftToeBase;
     [SerializeField] private GameObject leftFoot;
     [SerializeField] private GameObject leftLeg;
@@ -54,9 +54,9 @@ public class JointController : MonoBehaviour
     };
     
     public bool useRandomColor = true;
-
-    public Vector3[] screenPointsC1;
-    public Vector3[] screenPointsC2;
+    
+    [HideInInspector] public Vector3[] screenPointsC1;
+    [HideInInspector] public Vector3[] screenPointsC2;
 
     void Awake()
     {
