@@ -114,8 +114,6 @@ public class JointProjector : MonoBehaviour
             Vector2 canvasPos1;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPos1, mainCamera, out canvasPos1);
             
-            Debug.Log("screenPos0: " + screenPos0 + " screenPos1: " + screenPos1);
-            
             if (screenPos0.z < 0 && screenPos1.z < 0)
             {
                 _boneImages[i].gameObject.SetActive(false);
@@ -149,27 +147,15 @@ public class JointProjector : MonoBehaviour
     
     void CreateLine(Vector2 positionOne, Vector2 positionTwo, Image image, RectTransform transform, Color color)
     {
-        // Set the color of the image
         image.color = color;
         
-        Debug.Log("positionOne:" + positionOne + " positionTwo: " + positionTwo);
-    
-        // Calculate the midpoint between the two positions
         Vector2 midpoint = (positionOne + positionTwo) / 2f;
-
-        // Set the position of the RectTransform to the midpoint
         transform.anchoredPosition = midpoint;
-        // Calculate the direction from positionOne to positionTwo
+        
         Vector2 dir = positionTwo - positionOne;
-
-        // Calculate the angle in degrees from the direction vector
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-        // Lock rotation to the Z-axis by setting the X and Y rotation components to zero
+        
         transform.localRotation = Quaternion.Euler(0f, 0f, angle);
-
-        // Set the scale of the RectTransform. 
-        // The width (x scale) is set to the distance between the points
         transform.localScale = new Vector3(dir.magnitude, transform.localScale.y, 1f);
     }
 
@@ -179,30 +165,22 @@ public class JointProjector : MonoBehaviour
         Vector2 leftPixel = new Vector2(screenPointC1.x, screenPointC1.y);
         Vector2 rightPixel = new Vector2(screenPointC2.x, screenPointC2.y);
         
-        // Convert focal length from millimeters to pixels
         // Calculate focal length in pixels
         float focalLengthPixelsX = (_focalLengthMM * _imageWidthPixels) / _sensorSizeX;
         
-        // Focal length (in pixels) and baseline (in meters)
         float focalLength = focalLengthPixelsX;
-
-        // Calculate disparity
         float disparity = rightPixel.x - leftPixel.x;
 
         // Calculate depth
         float Z = (focalLength * _baseline) / disparity;
-
-        // Principal point (usually center of the image)
+        
         Vector2 principalPoint = new Vector2(Screen.width / 2, Screen.height / 2);
 
         // Calculate 3D point in the camera's local space
         float X = (leftPixel.x - principalPoint.x) * Z / focalLength;
         float Y = (leftPixel.y - principalPoint.y) * Z / focalLength;
         
-        // Position of the point in the left camera's local coordinate system
         Vector3 pointInLeftCameraSpace = new Vector3(X, Y, Z);
-
-        // If no rotation is applied to the camera (for simplicity):
         Vector3 pointInWorldSpace = _leftCameraPosition + (_leftCameraRotation * pointInLeftCameraSpace);
 
         return pointInWorldSpace;
