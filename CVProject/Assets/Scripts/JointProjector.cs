@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,8 @@ public class JointProjector : MonoBehaviour
     public GameObject spherePrefab; // Prefab of the sphere to be rendered in the scene
 
     public CameraController cameraController;
+
+    public TextMeshProUGUI text;
     
     private Image[] _jointCircles;
     private Image[] _boneImages;
@@ -25,9 +28,14 @@ public class JointProjector : MonoBehaviour
     private float _baseline; // Baseline (in meters)
     private Vector3 _leftCameraPosition; // Left camera position
     private Quaternion _leftCameraRotation; // Left camera rotation in world space
+
+    private float _totalError;
+    private int _frameNum;
     
     void Start()
     {
+        _frameNum = 1;
+        
         // Initialize bones as images
         _boneImages = new Image[jointController.bones.Length];
         for (int i = 0; i < jointController.bones.Length; i++)
@@ -101,7 +109,15 @@ public class JointProjector : MonoBehaviour
                 _leftCameraRotation = stereoCamera.transform.rotation;
                 
                 _spheres[i].transform.position = Triangulate(jointController.screenPointsC1[i], jointController.screenPointsC2[i]);
+
+                _totalError += (_spheres[i].transform.position - jointController.joints[i].joint.transform.position).magnitude;
             }
+        }
+
+        if (isCamera1)
+        {
+            text.text = "Mean error: " + _totalError / (_frameNum * jointController.joints.Length);
+            _frameNum += 1;
         }
         
         // Render bones
