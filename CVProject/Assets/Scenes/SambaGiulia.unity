@@ -8,8 +8,8 @@ OcclusionCullingSettings:
     smallestOccluder: 5
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: c371bef15ae9f439baacef4048f1d0b0
-  m_OcclusionCullingData: {fileID: 36300000, guid: 5a5b2432c266543a2b07caf452bb7d1f,
+  m_SceneGUID: 0222d3faeb2f24b27914c0bf86029b60
+  m_OcclusionCullingData: {fileID: 36300000, guid: bd9247373c3614837bcf424f4e30a25f,
     type: 2}
 --- !u!104 &2
 RenderSettings:
@@ -12864,8 +12864,8 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0.990566, g: 0.9217182, b: 0.7803044, a: 1}
-  m_Intensity: 8
-  m_Range: 20
+  m_Intensity: 60
+  m_Range: 100
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
