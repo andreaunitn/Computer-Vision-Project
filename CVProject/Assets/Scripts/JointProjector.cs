@@ -182,7 +182,7 @@ public class JointProjector : MonoBehaviour
         
         Vector3 pointInLeftCameraSpace = new Vector3(X, Y, Z);
         Vector3 pointInWorldSpace = _leftCameraPosition + (_leftCameraRotation * pointInLeftCameraSpace);
-
+        
         return pointInWorldSpace;
     }
 }

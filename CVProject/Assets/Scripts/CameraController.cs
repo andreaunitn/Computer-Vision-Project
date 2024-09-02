@@ -10,7 +10,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        SetCameraPosition();
+       SetCameraPosition();
     }
     
     void Update()
